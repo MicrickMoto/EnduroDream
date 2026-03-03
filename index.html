@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мото Копилка — Husqvarna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gb:rgba(255,255,255,.08);--gbr:rgba(255,255,255,.18);--a:#ff6b00;--a2:#ffb347}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden;background:#0a0a0a;color:#fff;-webkit-overflow-scrolling:touch}
+.bg-hero{position:fixed;inset:0;z-index:0;background:url('moto.jpg') center/cover no-repeat;filter:brightness(.35) saturate(1.3);transform:scale(1.05);animation:slowZoom 20s ease-in-out infinite alternate;contain:strict;isolation:isolate}
+@keyframes slowZoom{to{transform:scale(1.12)}}
+.gradient-overlay{position:fixed;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,rgba(10,6,2,.5) 60%,rgba(10,6,2,.85) 100%)}
+#ptcCanvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.65;contain:strict}
+.wrapper{position:relative;z-index:10;min-height:100svh;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px 60px;gap:32px}
+.site-header{text-align:center;letter-spacing:.08em}
+.site-header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,10vw,7rem);line-height:.9;background:linear-gradient(135deg,#fff 30%,var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 32px rgba(255,107,0,.4))}
+.site-header .sub{font-size:.85rem;font-weight:300;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:6px}
+.glass-card{background:rgba(255,255,255,.1);border:1px solid var(--gbr);border-radius:28px;padding:40px 44px;width:100%;max-width:560px;box-shadow:0 8px 64px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);position:relative;overflow:hidden;contain:layout style}
+@supports (backdrop-filter:blur(1px)){.glass-card{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:var(--gb)}}
+.glass-card::before{content:'';position:absolute;top:-60px;left:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,107,0,.12),transparent 70%);pointer-events:none}
+.glass-card::after{content:'';position:absolute;bottom:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(255,179,71,.1),transparent 70%);pointer-events:none}
+.amount-section{text-align:center;margin-bottom:28px}
+.label-small{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px}
+.amount-current{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,12vw,5.5rem);line-height:1;background:linear-gradient(135deg,#fff,var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 16px rgba(255,107,0,.5));will-change:transform}
+.amount-current.pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{50%{transform:scale(1.1)}}
+.currency-label{font-size:.55em;opacity:.6}
+.amount-goal{font-size:.78rem;color:rgba(255,255,255,.4);margin-top:4px}
+.amount-goal span{color:var(--a2);font-weight:600}
+.progress-wrap{margin-bottom:10px}
+.progress-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.progress-header .pct{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--a2)}
+.progress-header .remain{font-size:.72rem;color:rgba(255,255,255,.4)}
+.bar-track{height:18px;background:rgba(255,255,255,.06);border-radius:100px;border:1px solid rgba(255,255,255,.1);overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--a),var(--a2),rgba(255,255,255,.5));background-size:200% 100%;animation:shimmer 3s linear infinite;transition:width 1s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 20px rgba(255,107,0,.6);will-change:width}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.bar-fill::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:rgba(255,255,255,.2);border-radius:100px}
+.milestones{display:flex;justify-content:space-between;margin-top:8px;margin-bottom:24px}
+.milestone{font-size:.62rem;color:rgba(255,255,255,.25);text-align:center}
+.milestone.reached{color:var(--a2)}
+.milestone::before{content:'◆';display:block;font-size:.45rem;margin-bottom:3px}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);margin:24px 0}
+.moto-quote{text-align:center;font-size:.8rem;color:rgba(255,255,255,.35);font-style:italic;font-weight:300;letter-spacing:.05em}
+
+/* Remember me */
+.remember-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;user-select:none}
+.remember-row input[type=checkbox]{display:none}
+.remember-check{width:18px;height:18px;border-radius:5px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
+.remember-row input:checked+.remember-check{background:linear-gradient(135deg,var(--a),var(--a2));border-color:transparent}
+.remember-check::after{content:"\2713";font-size:.7rem;color:#000;opacity:0;transition:opacity .15s}
+.remember-row input:checked+.remember-check::after{opacity:1}
+.remember-label{font-size:.78rem;color:rgba(255,255,255,.45);letter-spacing:.04em}
+.admin-toggle-btn{margin-top:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.3);font-family:'Montserrat',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;padding:8px 20px;border-radius:100px;cursor:pointer;transition:background .25s,color .25s}
+.admin-toggle-btn:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+.modal-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.78);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:rgba(12,8,4,.97);border:1px solid rgba(255,255,255,.13);border-radius:24px;padding:40px 36px;width:340px;box-shadow:0 32px 80px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.07);text-align:center;animation:slideUp .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}}
+.modal-box h3{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.1em;color:var(--a2);margin-bottom:6px}
+.modal-box p{font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:28px}
+.input-group{margin-bottom:16px}
+.input-group input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:'Montserrat',sans-serif;font-size:16px;padding:14px 18px;border-radius:12px;outline:none;transition:border-color .25s;-webkit-appearance:none}
+.input-group input:focus{border-color:rgba(255,107,0,.5)}
+.input-group input::placeholder{color:rgba(255,255,255,.25)}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--a),var(--a2));border:none;color:#000;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.1em;padding:14px;border-radius:12px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 24px rgba(255,107,0,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,107,0,.5)}
+.error-msg{color:#f44;font-size:.75rem;margin-bottom:12px;display:none}
+.error-msg.show{display:block}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.75rem;letter-spacing:.1em;margin-top:16px;text-transform:uppercase;transition:color .2s}
+.modal-close:hover{color:rgba(255,255,255,.7)}
+.admin-panel{display:none;width:100%;max-width:560px;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
+.admin-panel.open{display:block}
+.admin-glass{background:rgba(30,10,0,.88);border:1px solid rgba(255,107,0,.25);border-radius:24px;padding:32px 36px;box-shadow:0 8px 40px rgba(255,107,0,.1),inset 0 1px 0 rgba(255,255,255,.1)}
+@supports (backdrop-filter:blur(1px)){.admin-glass{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(255,107,0,.05)}}
+.admin-title{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.admin-title .badge{background:linear-gradient(135deg,var(--a),var(--a2));color:#000;font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.12em;padding:3px 12px;border-radius:100px}
+.admin-title h3{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.08em;color:rgba(255,255,255,.8)}
+.amount-input-wrap{position:relative;margin-bottom:14px}
+.amount-input-wrap input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.05em;padding:14px 60px 14px 20px;border-radius:14px;outline:none;transition:border-color .25s;-webkit-appearance:none}
+.amount-input-wrap input:focus{border-color:rgba(255,107,0,.5)}
+.amount-input-wrap .rub{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.3);font-size:1rem}
+.quick-amounts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.qa-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-family:'Montserrat',sans-serif;font-size:.72rem;padding:6px 14px;border-radius:100px;cursor:pointer;transition:background .2s,color .2s;letter-spacing:.05em}
+.qa-btn:hover{background:rgba(255,107,0,.15);border-color:rgba(255,107,0,.4);color:var(--a2)}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.btn-add{background:linear-gradient(135deg,#2d8a3e,#4ecb5f);border:none;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.08em;padding:14px;border-radius:12px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(78,203,95,.25)}
+.btn-add:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(78,203,95,.35)}
+.btn-sub{background:linear-gradient(135deg,#8a2d2d,#cb4e4e);border:none;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.08em;padding:14px;border-radius:12px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(203,78,78,.25)}
+.btn-sub:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(203,78,78,.35)}
+.history-title{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px}
+.history-list{max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+.history-item{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03)}
+.op-plus{color:#4ecb5f;font-weight:600}.op-minus{color:#cb4e4e;font-weight:600}.op-time{color:rgba(255,255,255,.25);font-size:.68rem}
+.logout-btn{background:none;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.25);font-family:'Montserrat',sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;border-radius:100px;cursor:pointer;transition:border-color .2s,color .2s;margin-top:16px;display:block;width:100%}
+.logout-btn:hover{border-color:rgba(255,80,80,.4);color:rgba(255,80,80,.6)}
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(30,20,10,.92);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(16px);color:#fff;font-family:'Montserrat',sans-serif;font-size:.82rem;padding:12px 24px;border-radius:100px;z-index:200;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s cubic-bezier(.34,1.56,.64,1);will-change:transform,opacity}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(78,203,95,.4)}.toast.error{border-color:rgba(203,78,78,.4)}
+#confetti{position:fixed;inset:0;z-index:50;pointer-events:none}
+
+/* ── Loading overlay ── */
+.db-loading{position:fixed;inset:0;z-index:300;background:rgba(10,6,2,.92);backdrop-filter:blur(12px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .5s}
+.db-loading.hidden{opacity:0;pointer-events:none}
+.loader-ring{width:56px;height:56px;border:3px solid rgba(255,107,0,.15);border-top-color:var(--a);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.15em;color:rgba(255,255,255,.5)}
+.db-error-banner{display:none;background:rgba(203,78,78,.12);border:1px solid rgba(203,78,78,.35);border-radius:14px;padding:14px 20px;max-width:480px;width:100%;margin:0 20px;text-align:center;font-size:.8rem;line-height:1.6;color:rgba(255,255,255,.7)}
+.db-error-banner.show{display:block}
+.db-error-banner strong{color:#cb4e4e;display:block;margin-bottom:4px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em}
+
+/* ── Comments ── */
+.comments-section{width:100%;max-width:560px;display:flex;flex-direction:column;gap:16px}
+.comments-header{display:flex;align-items:center;gap:12px}
+.comments-icon{font-size:1.3rem}
+.comments-header h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.08em;color:rgba(255,255,255,.85)}
+.comments-count{background:rgba(255,107,0,.2);border:1px solid rgba(255,107,0,.3);color:var(--a2);font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:100px}
+.comment-form-card{padding:24px 28px!important}
+.comment-form-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
+.comment-input-name{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;font-family:'Montserrat',sans-serif;font-size:16px;padding:10px 16px;border-radius:10px;outline:none;transition:border-color .25s;-webkit-appearance:none}
+.comment-input-name:focus{border-color:rgba(255,107,0,.4)}
+.comment-input-name::placeholder{color:rgba(255,255,255,.25)}
+.comment-chars{font-size:.65rem;color:rgba(255,255,255,.25);white-space:nowrap;flex-shrink:0}
+.comment-textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;font-family:'Montserrat',sans-serif;font-size:16px;padding:12px 16px;border-radius:12px;outline:none;resize:none;transition:border-color .25s;line-height:1.5;-webkit-appearance:none}
+.comment-textarea:focus{border-color:rgba(255,107,0,.4)}
+.comment-textarea::placeholder{color:rgba(255,255,255,.22)}
+.comment-form-actions{display:flex;justify-content:flex-end;margin-top:12px}
+.btn-send-comment{background:linear-gradient(135deg,var(--a),var(--a2));border:none;color:#000;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.1em;padding:10px 28px;border-radius:10px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(255,107,0,.3)}
+.btn-send-comment:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(255,107,0,.45)}
+.comment-item{background:rgba(255,255,255,.1);border:1px solid var(--gbr);border-radius:20px;padding:20px 24px;position:relative;animation:fadeInUp .35s cubic-bezier(.34,1.56,.64,1) both;overflow:hidden;contain:layout style}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}}
+@supports (backdrop-filter:blur(1px)){.comment-item{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:var(--gb)}}
+.comment-item.admin-comment{background:rgba(255,107,0,.07);border-color:rgba(255,107,0,.3);box-shadow:0 4px 32px rgba(255,107,0,.1),inset 0 1px 0 rgba(255,255,255,.08)}
+.comment-item.admin-comment::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--a),var(--a2));border-radius:3px 0 0 3px}
+.comment-meta{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.comment-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);text-transform:uppercase}
+.admin-comment .comment-avatar{background:linear-gradient(135deg,var(--a),var(--a2));color:#000;border:none}
+.comment-name{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.85)}
+.admin-badge-inline{background:linear-gradient(135deg,var(--a),var(--a2));color:#000;font-family:'Bebas Neue',sans-serif;font-size:.65rem;letter-spacing:.12em;padding:2px 9px;border-radius:100px;vertical-align:middle}
+.comment-time{font-size:.65rem;color:rgba(255,255,255,.25);margin-left:auto}
+.comment-body{font-size:.83rem;line-height:1.6;color:rgba(255,255,255,.75);word-break:break-word}
+.admin-comment .comment-body{color:rgba(255,255,255,.88)}
+.comment-actions{display:none;gap:8px;margin-top:14px;flex-wrap:wrap}
+.comment-actions.visible{display:flex}
+.ca-btn{font-family:'Montserrat',sans-serif;font-size:.68rem;letter-spacing:.08em;padding:5px 14px;border-radius:100px;cursor:pointer;transition:background .2s;border:1px solid}
+.ca-reply{background:rgba(255,179,71,.08);border-color:rgba(255,179,71,.3);color:var(--a2)}
+.ca-reply:hover{background:rgba(255,179,71,.16)}
+.ca-delete{background:rgba(203,78,78,.08);border-color:rgba(203,78,78,.3);color:#cb4e4e}
+.ca-delete:hover{background:rgba(203,78,78,.18)}
+.reply-form{display:none;margin-top:14px;flex-direction:column;gap:8px}
+.reply-form.open{display:flex}
+.reply-textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,107,0,.25);color:#fff;font-family:'Montserrat',sans-serif;font-size:16px;padding:10px 14px;border-radius:10px;outline:none;resize:none;line-height:1.5;-webkit-appearance:none}
+.reply-textarea:focus{border-color:rgba(255,107,0,.5)}
+.reply-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-reply-send{background:linear-gradient(135deg,var(--a),var(--a2));border:none;color:#000;font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.08em;padding:8px 20px;border-radius:8px;cursor:pointer;transition:transform .2s}
+.btn-reply-send:hover{transform:translateY(-1px)}
+.btn-reply-cancel{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);font-family:'Montserrat',sans-serif;font-size:.75rem;padding:8px 16px;border-radius:8px;cursor:pointer;transition:color .2s}
+.btn-reply-cancel:hover{color:rgba(255,255,255,.6)}
+.comment-replies{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:10px}
+.reply-item{background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.2);border-radius:14px;padding:12px 16px;position:relative;overflow:hidden}
+.reply-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--a),var(--a2))}
+.reply-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.reply-name{font-size:.75rem;font-weight:700;color:var(--a2);letter-spacing:.05em}
+.reply-time{font-size:.62rem;color:rgba(255,255,255,.2);margin-left:auto}
+.reply-body{font-size:.8rem;line-height:1.55;color:rgba(255,255,255,.75)}
+.reply-delete-btn{display:none;background:none;border:none;color:rgba(203,78,78,.5);cursor:pointer;font-size:.7rem;padding:2px 6px;border-radius:6px;transition:color .2s,background .2s}
+.reply-delete-btn:hover{color:#cb4e4e;background:rgba(203,78,78,.1)}
+.admin-mode .reply-delete-btn{display:inline-block}
+.comments-empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,.2);font-size:.82rem;font-style:italic}
+.comments-empty .big{font-size:2rem;display:block;margin-bottom:8px}
+@media(max-width:600px){.glass-card,.admin-glass{padding:28px 20px}.action-row{grid-template-columns:1fr}}
+
+/* ── Donate button ── */
+.donate-wrap{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.btn-donate{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  width:100%;padding:22px 32px;border-radius:22px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#ff4b4b,#ff6b00,#ffb347);
+  background-size:200% 200%;
+  animation:donatePulse 3s ease infinite;
+  box-shadow:0 8px 40px rgba(255,75,75,.45),inset 0 1px 0 rgba(255,255,255,.2);
+  font-family:'Bebas Neue',sans-serif;color:#fff;
+  text-decoration:none;
+  transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+  will-change:transform;
+}
+.btn-donate::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,transparent 55%);border-radius:22px;pointer-events:none}
+.btn-donate:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 16px 56px rgba(255,75,75,.55),inset 0 1px 0 rgba(255,255,255,.2)}
+.btn-donate:active{transform:scale(.98)}
+@keyframes donatePulse{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.donate-ring{position:absolute;inset:-3px;border-radius:25px;border:2px solid rgba(255,107,0,.55);animation:ringPulse 2.2s ease-out infinite;pointer-events:none}
+@keyframes ringPulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.07);opacity:0}}
+.d-icon{font-size:2rem;filter:drop-shadow(0 2px 8px rgba(0,0,0,.25));flex-shrink:0}
+.d-text{display:flex;flex-direction:column;align-items:flex-start;line-height:1}
+.d-title{font-size:1.5rem;letter-spacing:.1em}
+.d-sub{font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:400;letter-spacing:.15em;opacity:.85;text-transform:uppercase;margin-top:4px}
+.donate-hint{font-size:.72rem;color:rgba(255,255,255,.28);letter-spacing:.04em;text-align:center;line-height:1.6}
+.donate-hint b{color:rgba(255,179,71,.7);font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div class="db-loading" id="dbLoading">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Подключение...</div>
+</div>
+
+<div class="bg-hero"></div>
+<canvas id="ptcCanvas"></canvas>
+<div class="gradient-overlay"></div>
+<canvas id="confetti"></canvas>
+
+<div class="wrapper">
+  <header class="site-header">
+    <h1>МОТО<br>КОПИЛКА</h1>
+    <p class="sub">Husqvarna · Dirt Bike</p>
+  </header>
+
+  <!-- DB error banner -->
+  <div class="db-error-banner" id="dbErrorBanner">
+    <strong>⚠ Нет подключения к БД</strong>
+    Вставь свои ключи Supabase в начало скрипта (SUPABASE_URL и SUPABASE_KEY)
+  </div>
+
+  <div class="glass-card">
+    <div class="amount-section">
+      <div class="label-small">Накоплено</div>
+      <div class="amount-current" id="displayAmount">0 <span class="currency-label">₽</span></div>
+      <div class="amount-goal">из <span>350 000 ₽</span></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="pct" id="pctDisplay">0%</span>
+        <span class="remain" id="remainDisplay">осталось: 350 000 ₽</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+    </div>
+    <div class="milestones">
+      <div class="milestone" id="m25">25%<br>87.5K</div>
+      <div class="milestone" id="m50">50%<br>175K</div>
+      <div class="milestone" id="m75">75%<br>262.5K</div>
+      <div class="milestone" id="m100">100%<br>350K</div>
+    </div>
+    <div class="divider"></div>
+    <p class="moto-quote" id="quoteText">Каждый рубль приближает тебя к грязи и свободе 🏍️</p>
+  </div>
+
+  <!-- ── Donate button ── -->
+  <div class="donate-wrap">
+    <a class="btn-donate" href="https://www.donationalerts.com/r/micrick" target="_blank" rel="noopener">
+      <div class="donate-ring"></div>
+      <span class="d-icon">🏍️</span>
+      <div class="d-text">
+        <span class="d-title">Поддержать на мотоцикл</span>
+        <span class="d-sub">Задонатить через DonationAlerts</span>
+      </div>
+    </a>
+    <p class="donate-hint">После доната — напиши сумму в комментарии 💬<br>Админ добавит её к прогрессу вручную ⚡</p>
+  </div>
+
+  <div class="comments-section">
+    <div class="comments-header">
+      <span class="comments-icon">💬</span>
+      <h2>Комментарии</h2>
+      <span class="comments-count" id="commentsCount">0</span>
+    </div>
+    <div class="glass-card comment-form-card">
+      <div class="comment-form-row">
+        <input type="text" id="commentName" placeholder="Твоё имя" maxlength="30" class="comment-input-name"/>
+        <span class="comment-chars" id="commentChars">0/200</span>
+      </div>
+      <textarea id="commentText" placeholder="Написать комментарий... поддержи или задай вопрос 🏍️" maxlength="200" rows="3" class="comment-textarea" oninput="updateCharCount()"></textarea>
+      <div class="comment-form-actions">
+        <button class="btn-send-comment" onclick="submitComment()">Отправить</button>
+      </div>
+    </div>
+    <div id="commentsList"></div>
+  </div>
+
+  <button class="admin-toggle-btn" id="adminToggleBtn" onclick="openLogin()">⚙ Войти как администратор</button>
+
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-glass">
+      <div class="admin-title">
+        <div class="badge">ADMIN</div>
+        <h3>Управление средствами</h3>
+      </div>
+      <div class="amount-input-wrap">
+        <input type="number" id="adminInput" placeholder="1000" min="1"/>
+        <span class="rub">₽</span>
+      </div>
+      <div class="quick-amounts">
+        <button class="qa-btn" onclick="setAmt(500)">500 ₽</button>
+        <button class="qa-btn" onclick="setAmt(1000)">1 000 ₽</button>
+        <button class="qa-btn" onclick="setAmt(5000)">5 000 ₽</button>
+        <button class="qa-btn" onclick="setAmt(10000)">10 000 ₽</button>
+        <button class="qa-btn" onclick="setAmt(50000)">50 000 ₽</button>
+      </div>
+      <div class="action-row">
+        <button class="btn-add" onclick="changeAmount(true)">➕ Добавить</button>
+        <button class="btn-sub" onclick="changeAmount(false)">➖ Убавить</button>
+      </div>
+      <div class="history-title">История операций</div>
+      <div class="history-list" id="historyList"></div>
+      <div style="margin-top:20px;padding:14px 16px;background:rgba(255,107,0,.07);border:1px solid rgba(255,107,0,.2);border-radius:14px;font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.7">
+        💡 <b style="color:rgba(255,179,71,.8)">Как зачесть донат:</b><br>
+        1. Зайди на <a href="https://www.donationalerts.com/r/micrick" target="_blank" style="color:var(--a2);text-decoration:none">DonationAlerts</a> — проверь сумму<br>
+        2. Введи сумму выше → нажми <b style="color:#4ecb5f">Добавить</b>
+      </div>
+      <button class="logout-btn" onclick="logout()">Выйти из аккаунта</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box">
+    <h3>🔐 Вход</h3>
+    <p>Только для администратора</p>
+    <div class="input-group"><input type="text" id="loginUser" placeholder="Логин" autocomplete="username"/></div>
+    <div class="input-group"><input type="password" id="loginPass" placeholder="Пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <label class="remember-row"><input type="checkbox" id="rememberMe"><span class="remember-check"></span><span class="remember-label">Запомнить меня</span></label>
+    <div class="error-msg" id="loginError">Неверный логин или пароль</div>
+    <button class="btn-primary" onclick="doLogin()">Войти</button>
+    <button class="modal-close" onclick="closeLogin()">Отмена</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ╔══════════════════════════════════════════════╗
+// ║  ВСТАВЬ СЮДА СВОИ КЛЮЧИ ИЗ SUPABASE         ║
+// ║  Project Settings → API                      ║
+// ╚══════════════════════════════════════════════╝
+const SUPABASE_URL = "https://dqlcsluxzozflzvfrmtp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_gtAw25iri5KR7FHAymCNGw_ULxC5fgl";
+
+// ── Другие настройки ─────────────────────────────
+const ADMIN_LOGIN    = "admin";
+const ADMIN_PASSWORD = "moto2025";
+const GOAL           = 350000;
+// ─────────────────────────────────────────────────
+
+// ── Supabase REST helper ──────────────────────────
+const SB = {
+  h: () => ({
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Prefer': 'return=representation',
+  }),
+  url: (table, query='') => `${SUPABASE_URL}/rest/v1/${table}${query}`,
+
+  async get(table, query='') {
+    const r = await fetch(SB.url(table, query), { headers: SB.h() });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async post(table, body) {
+    const r = await fetch(SB.url(table), { method:'POST', headers: SB.h(), body: JSON.stringify(body) });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async patch(table, query, body) {
+    const r = await fetch(SB.url(table, query), { method:'PATCH', headers: SB.h(), body: JSON.stringify(body) });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  },
+  async del(table, query) {
+    const r = await fetch(SB.url(table, query), { method:'DELETE', headers: SB.h() });
+    if (!r.ok) throw new Error(await r.text());
+  },
+};
+
+// ── Cached DOM ────────────────────────────────────
+const $ = id => document.getElementById(id);
+const D = {
+  amount:$('displayAmount'), pct:$('pctDisplay'), remain:$('remainDisplay'),
+  bar:$('barFill'), quote:$('quoteText'), histList:$('historyList'),
+  adminInput:$('adminInput'), adminBtn:$('adminToggleBtn'), adminPanel:$('adminPanel'),
+  loginModal:$('loginModal'), loginUser:$('loginUser'), loginPass:$('loginPass'),
+  loginError:$('loginError'), toast:$('toast'), loading:$('dbLoading'),
+  errBanner:$('dbErrorBanner'),
+  commentsList:$('commentsList'), commentsCount:$('commentsCount'),
+  commentName:$('commentName'), commentText:$('commentText'), commentChars:$('commentChars'),
+  m25:$('m25'), m50:$('m50'), m75:$('m75'), m100:$('m100'),
+};
+
+let isAdmin  = false;
+let currentAmount = 0;
+let historyData   = [];
+let commentsData  = [];
+
+const QUOTES = [
+  "Каждый рубль приближает тебя к грязи и свободе 🏍️",
+  "Скоро колёса в грязи, а душа в небе ⚡",
+  "Мотоцикл ждёт. Ты движешься к цели 🔥",
+  "Husqvarna не ждёт — она чувствует деньги 💰",
+  "Держи темп, как на прямике 🏁",
+];
+
+const fmt      = n => Math.round(n).toLocaleString('ru-RU');
+const sanitize = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const timeStr  = () => new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+
+// ── UI ────────────────────────────────────────────
+function updateUI(animate) {
+  const pct    = Math.min(100, (currentAmount / GOAL) * 100);
+  const remain = Math.max(0, GOAL - currentAmount);
+
+  if (animate) {
+    D.amount.classList.remove('pop');
+    void D.amount.offsetWidth;
+    D.amount.classList.add('pop');
+  }
+  D.amount.innerHTML  = `${fmt(currentAmount)} <span class="currency-label">₽</span>`;
+  D.pct.textContent   = pct.toFixed(1) + '%';
+  D.remain.textContent = 'осталось: ' + fmt(remain) + ' ₽';
+  D.bar.style.width   = pct + '%';
+  D.quote.textContent = QUOTES[Math.min(Math.floor(pct/25), QUOTES.length-1)];
+  D.m25.classList.toggle('reached', pct>=25);
+  D.m50.classList.toggle('reached', pct>=50);
+  D.m75.classList.toggle('reached', pct>=75);
+  D.m100.classList.toggle('reached', pct>=100);
+  renderHistory();
+}
+
+function renderHistory() {
+  if (!historyData.length) {
+    D.histList.innerHTML = '<div style="font-size:.72rem;color:rgba(255,255,255,.2);text-align:center;padding:12px">Операций пока нет</div>';
+    return;
+  }
+  D.histList.innerHTML = [...historyData].slice(-20).reverse().map(x =>
+    `<div class="history-item"><span class="${x.type==='+'?'op-plus':'op-minus'}">${x.type}${fmt(x.amount)} ₽</span><span class="op-time">${x.date}</span></div>`
+  ).join('');
+}
+
+// ── DB load ───────────────────────────────────────
+async function loadAll() {
+  const isConfigured = !SUPABASE_URL.includes('ТВОЙ');
+  if (!isConfigured) {
+    D.loading.classList.add('hidden');
+    D.errBanner.classList.add('show');
+    updateUI(false);
+    renderComments();
+    return;
+  }
+
+  try {
+    const [prog, hist, cmts, reps] = await Promise.all([
+      SB.get('progress', '?id=eq.1'),
+      SB.get('history', '?order=created_at.asc'),
+      SB.get('comments', '?order=created_at.asc'),
+      SB.get('replies', '?order=created_at.asc'),
+    ]);
+
+    currentAmount = prog[0]?.amount || 0;
+    historyData   = hist;
+
+    // Attach replies to comments
+    commentsData = cmts.map(c => ({
+      ...c,
+      replies: reps.filter(r => r.comment_id === c.id),
+    }));
+
+    updateUI(false);
+    renderComments();
+    D.loading.classList.add('hidden');
+
+    // ── Realtime polling every 8s ─────────────────
+    // (Supabase realtime requires paid plan on some setups;
+    //  polling is reliable and free)
+    setInterval(pollUpdates, 8000);
+
+  } catch(e) {
+    console.error('DB error:', e);
+    D.loading.classList.add('hidden');
+    D.errBanner.classList.add('show');
+    D.errBanner.innerHTML = `<strong>⚠ Ошибка подключения к БД</strong>${sanitize(e.message)}`;
+    D.errBanner.classList.add('show');
+  }
+}
+
+// ── Poll for changes (every 8s) ───────────────────
+// Save open reply forms before re-render
+function getOpenForms() {
+  const forms = [];
+  document.querySelectorAll('.reply-form.open').forEach(el => {
+    const id = el.id.replace('rf_','');
+    const ta = document.getElementById('rt_'+id);
+    forms.push({ id, val: ta ? ta.value : '' });
+  });
+  return forms;
+}
+function restoreForms(forms) {
+  for (const f of forms) {
+    const el = document.getElementById('rf_'+f.id);
+    if (el) { el.classList.add('open'); const ta = document.getElementById('rt_'+f.id); if (ta) ta.value = f.val; }
+  }
+}
+// Detect if user is typing in any comment/reply field
+function userTyping() {
+  const a = document.activeElement;
+  return a && (a.tagName==='TEXTAREA' || (a.tagName==='INPUT' && a.id !== 'adminInput'));
+}
+
+async function pollUpdates() {
+  try {
+    if (userTyping()) {
+      // Only refresh numbers, skip comment re-render to not lose typed text
+      const [prog, hist] = await Promise.all([
+        SB.get('progress', '?id=eq.1'),
+        SB.get('history', '?order=created_at.asc'),
+      ]);
+      const na = prog[0]?.amount || 0;
+      if (na !== currentAmount) { currentAmount = na; historyData = hist; updateUI(true); }
+      return;
+    }
+
+    const [prog, hist, cmts, reps] = await Promise.all([
+      SB.get('progress', '?id=eq.1'),
+      SB.get('history', '?order=created_at.asc'),
+      SB.get('comments', '?order=created_at.asc'),
+      SB.get('replies', '?order=created_at.asc'),
+    ]);
+
+    const na = prog[0]?.amount || 0;
+    const prevAmt = currentAmount;
+    currentAmount = na;
+    historyData = hist;
+
+    const newData = cmts.map(c => ({ ...c, replies: reps.filter(r => r.comment_id === c.id) }));
+
+    // Only re-render comments if something actually changed
+    const sig = d => JSON.stringify(d.map(x => x.id + ':' + (x.replies||[]).length));
+    const changed = sig(newData) !== sig(commentsData) || newData.length !== commentsData.length;
+    commentsData = newData;
+
+    if (na !== prevAmt) updateUI(true); else renderHistory();
+
+    if (changed) {
+      const saved = getOpenForms();
+      renderComments();
+      restoreForms(saved);
+    }
+  } catch(e) { /* silent */ }
+}
+
+// ── Admin: change amount ──────────────────────────
+const setAmt = v => { D.adminInput.value = v; };
+
+async function changeAmount(add) {
+  const val = parseFloat(D.adminInput.value);
+  if (!val || val <= 0) { showToast('Введи сумму','error'); return; }
+  if (!add && currentAmount - val < 0) { showToast('Нельзя уйти в минус','error'); return; }
+
+  const prev   = currentAmount;
+  const newAmt = add ? currentAmount + val : currentAmount - val;
+  const type   = add ? '+' : '-';
+  const date   = timeStr();
+
+  D.adminInput.value = '';
+
+  try {
+    await Promise.all([
+      SB.patch('progress', '?id=eq.1', { amount: newAmt }),
+      SB.post('history', { type, amount: val, date }),
+    ]);
+    currentAmount = newAmt;
+    historyData.push({ type, amount: val, date });
+    updateUI(true);
+
+    if (add) {
+      showToast(`+${fmt(val)} ₽ добавлено 🚀`, 'success');
+      if (newAmt >= GOAL && prev < GOAL) launchConfetti();
+    } else {
+      showToast(`-${fmt(val)} ₽ убрано`, '');
+    }
+  } catch(e) {
+    showToast('Ошибка БД: ' + e.message, 'error');
+  }
+}
+
+// ── Login ─────────────────────────────────────────
+const openLogin  = () => D.loginModal.classList.add('open');
+function closeLogin() { D.loginModal.classList.remove('open'); D.loginError.classList.remove('show'); }
+function doLogin() {
+  if (D.loginUser.value.trim() === ADMIN_LOGIN && D.loginPass.value === ADMIN_PASSWORD) {
+    isAdmin = true;
+    const _rem = $('rememberMe');
+    if (_rem && _rem.checked) localStorage.setItem('moto_adm','1');
+    else localStorage.removeItem('moto_adm');
+    closeLogin();
+    D.adminBtn.style.display = 'none';
+    D.adminPanel.classList.add('open');
+    showToast('Добро пожаловать, Администратор 🏍️','success');
+    renderComments();
+  } else {
+    D.loginError.classList.add('show');
+  }
+}
+function logout() {
+  isAdmin = false;
+  localStorage.removeItem('moto_adm');
+  D.adminPanel.classList.remove('open');
+  D.adminBtn.style.display = '';
+  showToast('Вышел из аккаунта','');
+  renderComments();
+}
+
+// ── Toast ─────────────────────────────────────────
+let _tt;
+function showToast(msg, type) {
+  D.toast.textContent = msg;
+  D.toast.className   = 'toast show ' + (type||'');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => D.toast.classList.remove('show'), 3000);
+}
+
+// ── Confetti ──────────────────────────────────────
+function launchConfetti() {
+  const cv = $('confetti'), ctx = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
+  const C  = ['#ff6b00','#ffb347','#fff','#4ecb5f','#4eb8cb'];
+  const pp = Array.from({length:120}, () => ({
+    x:Math.random()*cv.width, y:Math.random()*cv.height-cv.height,
+    r:Math.random()*5+3, d:Math.random()*2.5+1,
+    c:C[Math.random()*5|0], ta:0, ts:Math.random()*.1+.05,
+  }));
+  let raf;
+  const draw = () => {
+    ctx.clearRect(0,0,cv.width,cv.height); ctx.globalAlpha=.85;
+    for (const p of pp) {
+      ctx.fillStyle=p.c; ctx.beginPath();
+      ctx.ellipse(p.x+Math.sin(p.ta)*12,p.y,p.r,p.r*.5,p.ta,0,6.28); ctx.fill();
+      p.y+=p.d; p.ta+=p.ts;
+      if(p.y>cv.height){p.y=-10;p.x=Math.random()*cv.width;}
+    }
+    raf=requestAnimationFrame(draw);
+  };
+  draw();
+  setTimeout(()=>{cancelAnimationFrame(raf);ctx.clearRect(0,0,cv.width,cv.height);},5000);
+}
+
+// ── Particles ─────────────────────────────────────
+function initParticles() {
+  const cv=$ ('ptcCanvas'), ctx=cv.getContext('2d');
+  let W=cv.width=innerWidth, H=cv.height=innerHeight;
+  addEventListener('resize',()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;},{passive:true});
+  const pp=Array.from({length:14},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*40+15,sp:Math.random()*.35+.12,op:Math.random()*.15+.04}));
+  const draw=()=>{
+    ctx.clearRect(0,0,W,H);
+    for(const p of pp){
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+      g.addColorStop(0,`rgba(255,150,50,${p.op})`); g.addColorStop(1,'rgba(255,150,50,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.28); ctx.fill();
+      p.y-=p.sp; if(p.y+p.r<0){p.y=H+p.r;p.x=Math.random()*W;}
+    }
+    requestAnimationFrame(draw);
+  };
+  draw();
+}
+
+// ── Comments ──────────────────────────────────────
+const updateCharCount = () => { D.commentChars.textContent = D.commentText.value.length+'/200'; };
+
+async function submitComment() {
+  const name = D.commentName.value.trim() || 'Аноним';
+  const body = D.commentText.value.trim();
+  if (!body) { showToast('Напиши что-нибудь!','error'); return; }
+
+  try {
+    const [newC] = await SB.post('comments', { name, body, is_admin: false });
+    commentsData.push({ ...newC, replies: [] });
+    D.commentText.value = '';
+    D.commentChars.textContent = '0/200';
+    renderComments();
+    showToast('Комментарий добавлен 💬','success');
+  } catch(e) { showToast('Ошибка: '+e.message,'error'); }
+}
+
+async function deleteComment(id) {
+  try {
+    await SB.del('comments', `?id=eq.${id}`);
+    commentsData = commentsData.filter(c => c.id !== id);
+    renderComments();
+    showToast('Комментарий удалён','');
+  } catch(e) { showToast('Ошибка: '+e.message,'error'); }
+}
+
+function toggleReplyForm(id) {
+  const f = $('rf_'+id);
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) f.querySelector('textarea').focus();
+}
+
+async function submitReply(id) {
+  const ta = $('rt_'+id), body = ta.value.trim();
+  if (!body) return;
+  try {
+    const [newR] = await SB.post('replies', { comment_id: id, body });
+    const c = commentsData.find(x => x.id === id);
+    if (c) c.replies.push(newR);
+    renderComments();
+    showToast('Ответ опубликован ✅','success');
+  } catch(e) { showToast('Ошибка: '+e.message,'error'); }
+}
+
+async function deleteReply(cid, rid) {
+  try {
+    await SB.del('replies', `?id=eq.${rid}`);
+    const c = commentsData.find(x => x.id === cid);
+    if (c) c.replies = c.replies.filter(r => r.id !== rid);
+    renderComments();
+    showToast('Ответ удалён','');
+  } catch(e) { showToast('Ошибка: '+e.message,'error'); }
+}
+
+function renderComments() {
+  D.commentsCount.textContent = commentsData.length;
+  if (!commentsData.length) {
+    D.commentsList.innerHTML = '<div class="comments-empty"><span class="big">🏁</span>Пока никто не написал. Будь первым!</div>';
+    return;
+  }
+  const actCls  = isAdmin ? 'visible' : '';
+  const modeCls = isAdmin ? 'admin-mode' : '';
+  const buf     = [];
+
+  for (let i = commentsData.length-1; i >= 0; i--) {
+    const c   = commentsData[i];
+    const ini = c.is_admin ? '★' : (c.name[0]||'?').toUpperCase();
+    const adminMark = c.is_admin ? '<span class="admin-badge-inline">ADMIN</span>' : '';
+    let repliesHtml = '';
+    if (c.replies && c.replies.length) {
+      let rp = '';
+      for (const r of c.replies) {
+        const rt = new Date(r.created_at).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+        rp += `<div class="reply-item"><div class="reply-meta"><span class="reply-name">★ Администратор</span><button class="reply-delete-btn" onclick="deleteReply(${c.id},${r.id})">✕ удалить</button><span class="reply-time">${rt}</span></div><div class="reply-body">${sanitize(r.body)}</div></div>`;
+      }
+      repliesHtml = `<div class="comment-replies">${rp}</div>`;
+    }
+    const ct = new Date(c.created_at).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    buf.push(
+      `<div class="comment-item${c.is_admin?' admin-comment':''} ${modeCls}">` +
+      `<div class="comment-meta"><div class="comment-avatar">${ini}</div>` +
+      `<span class="comment-name">${sanitize(c.name)} ${adminMark}</span>` +
+      `<span class="comment-time">${ct}</span></div>` +
+      `<div class="comment-body">${sanitize(c.body)}</div>` +
+      repliesHtml +
+      `<div class="comment-actions ${actCls}">` +
+      `<button class="ca-btn ca-reply" onclick="toggleReplyForm(${c.id})">↩ Ответить</button>` +
+      `<button class="ca-btn ca-delete" onclick="deleteComment(${c.id})">✕ Удалить</button></div>` +
+      `<div class="reply-form" id="rf_${c.id}"><textarea class="reply-textarea" id="rt_${c.id}" rows="2" placeholder="Ответ от администратора..." lang="ru" spellcheck="true" onkeydown="if(event.ctrlKey&&event.key==='Enter')submitReply(${c.id})"></textarea>` +
+      `<div class="reply-actions"><button class="btn-reply-cancel" onclick="toggleReplyForm(${c.id})">Отмена</button>` +
+      `<button class="btn-reply-send" onclick="submitReply(${c.id})">Ответить</button></div></div></div>`
+    );
+  }
+  D.commentsList.innerHTML = buf.join('');
+}
+
+// auto_login_check
+if (localStorage.getItem('moto_adm') === '1') { isAdmin = true; }
+
+// ── Pause heavy animations when keyboard is open (mobile perf) ──
+const ptcCv = document.getElementById('ptcCanvas');
+let _kbOpen = false;
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    const ratio = window.visualViewport.height / window.screen.height;
+    const kbNow = ratio < 0.75;
+    if (kbNow !== _kbOpen) {
+      _kbOpen = kbNow;
+      // Dim/pause particles when keyboard open to save GPU
+      ptcCv.style.opacity = kbNow ? '0' : '.65';
+      ptcCv.style.visibility = kbNow ? 'hidden' : 'visible';
+      // Pause bg animation
+      const bg = document.querySelector('.bg-hero');
+      if (bg) bg.style.animationPlayState = kbNow ? 'paused' : 'running';
+    }
+  }, { passive: true });
+}
+
+// ── Init ──────────────────────────────────────────
+initParticles();
+loadAll().then(() => {
+  if (isAdmin) {
+    if (D.adminBtn) D.adminBtn.style.display = 'none';
+    if (D.adminPanel) D.adminPanel.classList.add('open');
+  }
+});
+</script>
+</body>
+</html>
